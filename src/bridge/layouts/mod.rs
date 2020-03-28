@@ -11,7 +11,6 @@ pub fn unsupported_key<R>(keycode: Keycode) -> Option<R> {
     trace!("Unsupported key: {:?}", keycode);
     None
 }
-
 #[derive(Clone)]
 pub enum KeyboardLayout {
     Qwerty,
@@ -97,7 +96,11 @@ pub fn produce_neovim_keybinding_string(
 ) -> Option<String> {
     let shift = modifiers.contains(Mod::LSHIFTMOD) || modifiers.contains(Mod::RSHIFTMOD);
     let ctrl = modifiers.contains(Mod::LCTRLMOD) || modifiers.contains(Mod::RCTRLMOD);
-    let alt = modifiers.contains(Mod::LALTMOD) || modifiers.contains(Mod::RALTMOD);
+    // Right Alt (RALTMOD) is not considered because some keyboards replace it with AltGr,
+    // (Alt Group) which functions in a similar fashion to Shift. It allows a different character to
+    // be entered while it is pressed. When Right Alt was considered here, it would be impossible to
+    // enter such characters.
+    let alt = modifiers.contains(Mod::LALTMOD);
     let gui = modifiers.contains(Mod::LGUIMOD) || modifiers.contains(Mod::RGUIMOD);
     if let Some(text) = keytext {
         Some(append_modifiers(&text, false, false, ctrl, alt, gui))
